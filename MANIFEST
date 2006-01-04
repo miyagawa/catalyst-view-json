@@ -2,4 +2,8 @@ Changes
 lib/Catalyst/View/JSON.pm
 Makefile.PL
 MANIFEST			This list of files
+META.yml			Module meta-data (added by MakeMaker)
 t/00_compile.t
+t/01_server.t
+t/lib/TestApp.pm
+t/lib/TestApp/View/JSON.pm
