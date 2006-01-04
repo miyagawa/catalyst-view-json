@@ -1,4 +1,7 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.02  Wed Jan  4 10:41:28 UTC 2006
+        - Include the tests file on distribution
+
 0.01  Wed Jan  4 09:27:33 2006
 	- original version
