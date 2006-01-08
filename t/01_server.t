@@ -4,7 +4,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib";
 
-use Test::More tests => 15;
+use Test::More tests => 17;
 use Catalyst::Test 'TestApp';
 use JSON ();
 
@@ -23,42 +23,42 @@ BEGIN {
     };
 }
 
-my $entrypoint = 'http://localhost/foo';
+my $entrypoint = "http://localhost/foo";
 
-run_tests();
+{
+    my $request = HTTP::Request->new( GET => $entrypoint );
 
-sub run_tests {
+    ok( my $response = request($request), 'Request' );
+    ok( $response->is_success, 'Response Successful 2xx' );
+    is( $response->code, 200, 'Response Code' );
+    ok( $response->content_type, 'text/javascript+json' );
 
-    # test echo
-    {
-        my $request = HTTP::Request->new( GET => $entrypoint );
+    my $data = JSON::jsonToObj($response->content);
+    is $data->{json_foo}, "bar";
+    is_deeply $data->{json_baz}, [ 1, 2, 3 ];
+    ok ! $data->{foo}, "doesn't return stash that doesn't match json_";
+}
 
-        ok( my $response = request($request), 'Request' );
-        ok( $response->is_success, 'Response Successful 2xx' );
-        is( $response->code, 200, 'Response Code' );
-        ok( $response->content_type, 'text/javascript+json' );
+{
+    my $request = HTTP::Request->new( GET => $entrypoint . "?cb=foobar" );
 
-        my $data = JSON::jsonToObj($response->content);
-        is $data->{json_foo}, "bar";
-        is_deeply $data->{json_baz}, [ 1, 2, 3 ];
-        ok ! $data->{foo}, "doesn't return stash that doesn't match json_";
-    }
+    ok( my $response = request($request), 'Request' );
+    ok( $response->is_success, 'Response Successful 2xx' );
+    is( $response->code, 200, 'Response Code' );
+    ok( $response->content_type, 'text/javascript+json' );
 
-    {
-        my $request = HTTP::Request->new( GET => $entrypoint . "?cb=foobar" );
+    my $body = $response->content;
+    ok $body =~ s/^foobar\((.*?)\);$/$1/sg, "wrapped in a callback";
 
-        ok( my $response = request($request), 'Request' );
-        ok( $response->is_success, 'Response Successful 2xx' );
-        is( $response->code, 200, 'Response Code' );
-        ok( $response->content_type, 'text/javascript+json' );
+    my $data = JSON::jsonToObj($body);
+    is $data->{json_foo}, "bar";
+    is_deeply $data->{json_baz}, [ 1, 2, 3 ];
+    ok ! $data->{foo}, "doesn't return stash that doesn't match json_";
+}
 
-        my $body = $response->content;
-        ok $body =~ s/^foobar\((.*?)\);$/$1/sg, "wrapped in a callback";
+{
+    my $request = HTTP::Request->new( GET => $entrypoint . "?cb=foobar%28" );
 
-        my $data = JSON::jsonToObj($body);
-        is $data->{json_foo}, "bar";
-        is_deeply $data->{json_baz}, [ 1, 2, 3 ];
-        ok ! $data->{foo}, "doesn't return stash that doesn't match json_";
-    }
-
+    ok( my $response = request($request), 'Request' );
+    like $response->header('X-Error'), qr/Invalid callback parameter/;
 }

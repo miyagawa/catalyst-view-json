@@ -27,4 +27,10 @@ sub foo : Global {
     $c->forward('TestApp::View::JSON');
 }
 
+sub finalize_error {
+    my $c = shift;
+    $c->res->header('X-Error' => $c->error->[0]);
+    $c->NEXT::finalize_error;
+}
+
 1;

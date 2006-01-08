@@ -6,6 +6,7 @@ our $VERSION = '0.02';
 use base qw( Catalyst::View );
 use NEXT;
 use JSON ();
+use Catalyst::Exception;
 
 __PACKAGE__->mk_accessors(qw( allow_callback callback_param expose_stash ));
 
@@ -48,6 +49,7 @@ sub process {
     my $cb_param = $self->allow_callback
         ? ($self->callback_param || 'callback') : undef;
     my $cb = $cb_param ? $c->req->param($cb_param) : undef;
+    $self->validate_callback_param($cb) if $cb;
 
     $c->res->content_type('text/javascript+json'); # xxx
 
@@ -57,6 +59,12 @@ sub process {
     $output .= ");"   if $cb;
 
     $c->res->output($output);
+}
+
+sub validate_callback_param {
+    my($self, $param) = @_;
+    $param =~ /^[a-zA-Z0-9\.\_\[\]]+$/
+        or Catalyst::Exception->throw("Invalid callback parameter $param");
 }
 
 1;
@@ -152,6 +160,13 @@ but C</foo/bar?output=json&callback=handle_result> will give you:
 
 and you can write a custom C<handle_result> function to handle the
 returned data asynchronously.
+
+The valid characters you can use in the callback function are
+
+  [a-zA-Z0-9\.\_\[\]]
+
+but you can customize the behaviour by overriding the
+C<validate_callback_param> method in your View::JSON class.
 
 See Yahoo's nice explanation on
 L<http://developer.yahoo.net/common/json.html>
