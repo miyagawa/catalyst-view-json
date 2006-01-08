@@ -1,14 +1,14 @@
 package Catalyst::View::JSON;
 
 use strict;
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 use base qw( Catalyst::View );
 use NEXT;
 use JSON ();
 use Catalyst::Exception;
 
-__PACKAGE__->mk_accessors(qw( allow_callback callback_param expose_stash ));
+__PACKAGE__->mk_accessors(qw( allow_callback callback_param expose_stash __json ));
 
 sub new {
     my($class, $c, $arguments) = @_;
@@ -23,6 +23,7 @@ sub new {
         }
     }
 
+    $self->__json( JSON::Converter->new );
     $self;
 }
 
@@ -32,19 +33,27 @@ sub process {
     # get the response data from stash
     my $cond = sub { 1 };
 
+    my $single_key;
     if (my $expose = $self->expose_stash) {
         if (ref($expose) eq 'Regexp') {
             $cond = sub { $_[0] =~ $expose };
         } elsif (ref($expose) eq 'ARRAY') {
             my %match = map { $_ => 1 } @$expose;
             $cond = sub { $match{$_[0]} };
+        } elsif (!ref($expose)) {
+            $single_key = $expose;
         } else {
-            $c->log->warn("expose_stash shold be an array referernce or Regexp object.");
+            $c->log->warn("expose_stash should be an array referernce or Regexp object.");
         }
     }
 
-    my %data = map { $cond->($_) ? ($_ => $c->stash->{$_}) : () }
-                keys %{$c->stash};
+    my $data;
+    if ($single_key) {
+        $data = $c->stash->{$single_key};
+    } else {
+        $data = { map { $cond->($_) ? ($_ => $c->stash->{$_}) : () }
+                  keys %{$c->stash} };
+    }
 
     my $cb_param = $self->allow_callback
         ? ($self->callback_param || 'callback') : undef;
@@ -55,10 +64,15 @@ sub process {
 
     my $output;
     $output .= "$cb(" if $cb;
-    $output .= JSON::objToJson(\%data);
+    $output .= $self->_jsonize($data);
     $output .= ");"   if $cb;
 
     $c->res->output($output);
+}
+
+sub _jsonize {
+    my($self, $data) = @_;
+    ref $data ? $self->__json->objToJson($data) : $self->__json->valueToJson($data);
 }
 
 sub validate_callback_param {
@@ -118,14 +132,34 @@ to C<callback>. Only effective when C<allow_callback> is turned on.
 
 =item expose_stash
 
-List or regular expression object, to specify which stash keys are
-exposed as a JSON response. Defaults to everything. Examples:
+Scalar, List or regular expression object, to specify which stash keys are
+exposed as a JSON response. Defaults to everything. Examples configuration:
+
+  # use 'json_data' value as a data to return
+  expose_stash => 'json_data',
 
   # only exposes keys 'foo' and 'bar'
   expose_stash => [ qw( foo bar ) ],
 
   # only exposes keys that matches with /^json_/
   expose_stash => qr/^json_/,
+
+Suppose you have data structure of the following.
+
+  $c->stash->{foo} = [ 1, 2 ];
+  $c->stash->{bar} = [ 3, 4 ];
+
+By default, this view will return:
+
+  {"foo":[1,2],"bar":2}
+
+But when you set C<< expose_stash => 'foo' >>, it'll just return
+
+  [1,2]
+
+instead of the whole object (hashref in perl). This option will be
+useful when you share the method with different views (e.g. TT) and
+don't want to expose non-irrelevant stash variables as in JSON.
 
 =back
 

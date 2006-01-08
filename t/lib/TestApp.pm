@@ -20,9 +20,20 @@ __PACKAGE__->setup;
 sub foo : Global {
     my ( $self, $c ) = @_;
 
+    $c->component('View::JSON')->expose_stash(qr/^json_/);
     $c->stash->{json_foo} = "bar";
     $c->stash->{json_baz} = [ 1, 2, 3 ];
     $c->stash->{foo}      = "barbarbar";
+
+    $c->forward('TestApp::View::JSON');
+}
+
+sub foo2 : Global {
+    my( $self, $c ) = @_;
+
+    $c->component('View::JSON')->expose_stash('json_foo');
+    $c->stash->{json_foo} = "bar";
+    $c->stash->{json_baz} = [ 1, 2, 3 ];
 
     $c->forward('TestApp::View::JSON');
 }

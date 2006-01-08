@@ -4,7 +4,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib";
 
-use Test::More tests => 17;
+use Test::More tests => 22;
 use Catalyst::Test 'TestApp';
 use JSON ();
 
@@ -37,6 +37,18 @@ my $entrypoint = "http://localhost/foo";
     is $data->{json_foo}, "bar";
     is_deeply $data->{json_baz}, [ 1, 2, 3 ];
     ok ! $data->{foo}, "doesn't return stash that doesn't match json_";
+}
+
+{
+    my $request = HTTP::Request->new( GET => "http://localhost/foo2" );
+
+    ok( my $response = request($request), 'Request' );
+    ok( $response->is_success, 'Response Successful 2xx' );
+    is( $response->code, 200, 'Response Code' );
+    ok( $response->content_type, 'text/javascript+json' );
+
+    my $data = JSON::jsonToObj($response->content);
+    is $data, "bar";
 }
 
 {

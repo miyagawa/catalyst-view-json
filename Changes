@@ -1,5 +1,9 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.04  Sun Jan  8 17:06:56 UTC 2006
+        - Added scalar support to expose_hash and updated the
+          document.
+
 0.03  Sun Jan  8 16:36:36 UTC 2006
         - Added sanitization of callback function names to avoid XSS
           thingy.
