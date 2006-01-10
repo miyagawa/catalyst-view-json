@@ -4,7 +4,8 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib";
 
-use Test::More tests => 22;
+use Encode;
+use Test::More tests => 28;
 use Catalyst::Test 'TestApp';
 use JSON ();
 
@@ -31,7 +32,7 @@ my $entrypoint = "http://localhost/foo";
     ok( my $response = request($request), 'Request' );
     ok( $response->is_success, 'Response Successful 2xx' );
     is( $response->code, 200, 'Response Code' );
-    ok( $response->content_type, 'text/javascript+json' );
+    is_deeply( [ $response->content_type ], [ 'text/javascript', 'charset=utf-8' ] );
 
     my $data = JSON::jsonToObj($response->content);
     is $data->{json_foo}, "bar";
@@ -45,7 +46,7 @@ my $entrypoint = "http://localhost/foo";
     ok( my $response = request($request), 'Request' );
     ok( $response->is_success, 'Response Successful 2xx' );
     is( $response->code, 200, 'Response Code' );
-    ok( $response->content_type, 'text/javascript+json' );
+    is_deeply( [ $response->content_type ], [ 'text/javascript', 'charset=utf-8' ] );
 
     my $data = JSON::jsonToObj($response->content);
     is $data, "bar";
@@ -57,7 +58,7 @@ my $entrypoint = "http://localhost/foo";
     ok( my $response = request($request), 'Request' );
     ok( $response->is_success, 'Response Successful 2xx' );
     is( $response->code, 200, 'Response Code' );
-    ok( $response->content_type, 'text/javascript+json' );
+    is_deeply( [ $response->content_type ], [ 'text/javascript', 'charset=utf-8' ] );
 
     my $body = $response->content;
     ok $body =~ s/^foobar\((.*?)\);$/$1/sg, "wrapped in a callback";
@@ -73,4 +74,20 @@ my $entrypoint = "http://localhost/foo";
 
     ok( my $response = request($request), 'Request' );
     like $response->header('X-Error'), qr/Invalid callback parameter/;
+}
+
+{
+    my $request = HTTP::Request->new( GET => "http://localhost/foo3" );
+
+    ok( my $response = request($request), 'Request' );
+    is_deeply( [ $response->content_type ], [ 'text/javascript', 'charset=utf-8' ] );
+    ok decode('utf-8', $response->content);
+}
+
+{
+    my $request = HTTP::Request->new( GET => "http://localhost/foo4" );
+
+    ok( my $response = request($request), 'Request' );
+    is_deeply( [ $response->content_type ], [ 'text/javascript', 'charset=euc-jp' ] );
+    ok decode('euc-jp', $response->content);
 }

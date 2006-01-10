@@ -1,7 +1,7 @@
 package Catalyst::View::JSON;
 
 use strict;
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 use base qw( Catalyst::View );
 use Encode ();
@@ -70,7 +70,7 @@ sub process {
     # this view automatically transcodes to the encoding you set.
     # Otherwise it just by passed the stash data in JSON format
     if ( Encode::is_utf8($json) ) {
-        $json = Encode::encode($json, $encoding);
+        $json = Encode::encode($encoding, $json);
     }
 
     $c->res->content_type("text/javascript; charset=$encoding");
