@@ -1,7 +1,7 @@
 package Catalyst::View::JSON;
 
 use strict;
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 use base qw( Catalyst::View );
 use Encode ();
@@ -86,7 +86,11 @@ sub process {
         $json = Encode::encode($encoding, $json);
     }
 
-    $c->res->content_type("text/javascript; charset=$encoding");
+    if (($c->req->user_agent || '') =~ /Opera/) {
+        $c->res->content_type("application/x-javascript; charset=$encoding");
+    } else {
+        $c->res->content_type("text/javascript; charset=$encoding");
+    }
 
     my $output;
     $output .= "$cb(" if $cb;
