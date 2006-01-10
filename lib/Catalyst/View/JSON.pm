@@ -1,15 +1,14 @@
 package Catalyst::View::JSON;
 
 use strict;
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 use base qw( Catalyst::View );
 use Encode ();
 use NEXT;
-use JSON ();
 use Catalyst::Exception;
 
-__PACKAGE__->mk_accessors(qw( allow_callback callback_param expose_stash encoding __json ));
+__PACKAGE__->mk_accessors(qw( allow_callback callback_param expose_stash encoding json_dumper ));
 
 sub new {
     my($class, $c, $arguments) = @_;
@@ -19,12 +18,26 @@ sub new {
         if ($self->can($field)) {
             $self->$field($arguments->{$field});
         } else {
-            $c->log->debug("Unkown config parameter '$field'")
-#                if $c->debug;
+            $c->log->debug("Unkown config parameter '$field'");
         }
     }
 
-    $self->__json( JSON::Converter->new );
+    my $driver = $arguments->{json_driver} || 'JSON';
+    if ($driver eq 'JSON::Syck') {
+        require JSON::Syck;
+        $self->json_dumper(sub { JSON::Syck::Dump($_[0]) });
+    } elsif ($driver eq 'JSON') {
+        require JSON::Converter;
+        my $conv   = JSON::Converter->new;
+        my $dumper = sub {
+            my $data = shift;
+            ref $data ? $conv->objToJson($data) : $conv->valueToJson($data);
+        };
+        $self->json_dumper($dumper);
+    } else {
+        Catalyst::Exception->throw("Don't know json_driver $driver");
+    }
+
     $self;
 }
 
@@ -61,7 +74,7 @@ sub process {
     my $cb = $cb_param ? $c->req->param($cb_param) : undef;
     $self->validate_callback_param($cb) if $cb;
 
-    my $json = $self->_jsonize($data);
+    my $json = $self->json_dumper->($data);
 
     # When you set encoding option in View::JSON, this plugin DWIMs
     my $encoding = $self->encoding || 'utf-8';
@@ -81,11 +94,6 @@ sub process {
     $output .= ");"   if $cb;
 
     $c->res->output($output);
-}
-
-sub _jsonize {
-    my($self, $data) = @_;
-    ref $data ? $self->__json->objToJson($data) : $self->__json->valueToJson($data);
 }
 
 sub validate_callback_param {
