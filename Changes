@@ -1,5 +1,10 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.05  Tue Jan 10 08:51:02 UTC 2006
+        - Added encoding option (default utf-8) to tackle with Safari
+          multibytes problem. Content-Type is now text/javascript (no +json)
+          (Thanks to kazeburo)
+
 0.04  Sun Jan  8 17:06:56 UTC 2006
         - Added scalar support to expose_hash and updated the
           document.

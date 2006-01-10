@@ -1,14 +1,15 @@
 package Catalyst::View::JSON;
 
 use strict;
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 use base qw( Catalyst::View );
+use Encode ();
 use NEXT;
 use JSON ();
 use Catalyst::Exception;
 
-__PACKAGE__->mk_accessors(qw( allow_callback callback_param expose_stash __json ));
+__PACKAGE__->mk_accessors(qw( allow_callback callback_param expose_stash encoding __json ));
 
 sub new {
     my($class, $c, $arguments) = @_;
@@ -60,11 +61,23 @@ sub process {
     my $cb = $cb_param ? $c->req->param($cb_param) : undef;
     $self->validate_callback_param($cb) if $cb;
 
-    $c->res->content_type('text/javascript+json'); # xxx
+    my $json = $self->_jsonize($data);
+
+    # When you set encoding option in View::JSON, this plugin DWIMs
+    my $encoding = $self->encoding || 'utf-8';
+
+    # if you pass a valid Unicode flagged string in the stash,
+    # this view automatically transcodes to the encoding you set.
+    # Otherwise it just by passed the stash data in JSON format
+    if ( Encode::is_utf8($json) ) {
+        $json = Encode::encode($json, $encoding);
+    }
+
+    $c->res->content_type("text/javascript; charset=$encoding");
 
     my $output;
     $output .= "$cb(" if $cb;
-    $output .= $self->_jsonize($data);
+    $output .= $json;
     $output .= ");"   if $cb;
 
     $c->res->output($output);
@@ -153,7 +166,11 @@ By default, this view will return:
 
   {"foo":[1,2],"bar":2}
 
-But when you set C<< expose_stash => 'foo' >>, it'll just return
+When you set C<< expose_stash => [ 'foo' ] >>, it'll return
+
+  {"foo":[1,2]}
+
+and in the case of C<< expose_stash => 'foo' >>, it'll just return
 
   [1,2]
 
@@ -162,6 +179,24 @@ useful when you share the method with different views (e.g. TT) and
 don't want to expose non-irrelevant stash variables as in JSON.
 
 =back
+
+=head2 ENCODINGS
+
+Due to the browser gotchas like those of Safari and Opera, sometimes
+you have to specify a valid charset value in the response's
+Content-Type header, e.g. C<text/javascript; charset=utf-8>.
+
+Catalyst::View::JSON comes with the configuration variable C<encoding>
+which defaults to utf-8. You can change it via C<< YourApp->config >>
+or even runtime, using C<component>.
+
+  $c->component('View::JSON')->encoding('euc-jp');
+
+This assumes you set your stash data in raw euc-jp bytes, or Unicode
+flagged variable. In case of Unicode flagged variable,
+Catalyst::View::JSON automatically encodes the data into your
+C<encoding> value (euc-jp in this case) before emitting the data to
+the browser.
 
 =head2 CALLBACKS
 
