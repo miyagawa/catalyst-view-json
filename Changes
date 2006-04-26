@@ -1,5 +1,8 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.09  Thu Apr 20 22:16:19 JST 2006
+        - Added Helper class (Thanks to Komatsu)
+
 0.08  Tue Jan 10 13:31:39 UTC 2006
         - Added Opera hack (Content-Type: applcation/x-javascript)
           (Thanks to kazeburo)

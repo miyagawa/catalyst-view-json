@@ -1,4 +1,5 @@
 Changes
+lib/Catalyst/Helper/View/JSON.pm
 lib/Catalyst/View/JSON.pm
 Makefile.PL
 MANIFEST			This list of files
