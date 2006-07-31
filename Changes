@@ -1,5 +1,8 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.11  Mon Jul 31 16:21:14 JST 2006
+        - Fix validator so 'json_driver' should just work (Thanks to typester)
+
 0.10  Sun Jul 30 23:46:43 JST 2006
         - Updated document (Thanks to John Wang)
         - Switch Content-Type to application/json the standard other than Opera
