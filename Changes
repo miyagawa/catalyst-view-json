@@ -1,5 +1,10 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.10  Sun Jul 30 23:46:43 JST 2006
+        - Updated document (Thanks to John Wang)
+        - Switch Content-Type to application/json the standard other than Opera
+        - Mention Encode::UCS::JavaScript in POD
+
 0.09  Thu Apr 20 22:16:19 JST 2006
         - Added Helper class (Thanks to Komatsu)
 

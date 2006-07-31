@@ -1,7 +1,7 @@
 package Catalyst::View::JSON;
 
 use strict;
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 use base qw( Catalyst::View );
 use Encode ();
@@ -81,7 +81,7 @@ sub process {
 
     # if you pass a valid Unicode flagged string in the stash,
     # this view automatically transcodes to the encoding you set.
-    # Otherwise it just by passed the stash data in JSON format
+    # Otherwise it just bypasses the stash data in JSON format
     if ( Encode::is_utf8($json) ) {
         $json = Encode::encode($encoding, $json);
     }
@@ -89,7 +89,7 @@ sub process {
     if (($c->req->user_agent || '') =~ /Opera/) {
         $c->res->content_type("application/x-javascript; charset=$encoding");
     } else {
-        $c->res->content_type("text/javascript; charset=$encoding");
+        $c->res->content_type("application/json; charset=$encoding");
     }
 
     my $output;
@@ -210,6 +210,12 @@ Catalyst::View::JSON automatically encodes the data into your
 C<encoding> value (euc-jp in this case) before emitting the data to
 the browser.
 
+Another option would be to use I<JavaScript-UCS> as an encoding (and
+pass Unicode flagged string to the stash). That way all non-ASCII
+characters in the output JSON will be automatically encoded to
+JavaScript Unicode encoding like I<\uXXXX>. You have to install
+L<Encode::JavaScript::UCS> to use the encoding.
+
 =head2 CALLBACKS
 
 By default it returns raw JSON data so your JavaScript app can deal
@@ -290,6 +296,6 @@ it under the same terms as Perl itself.
 
 =head1 SEE ALSO
 
-L<Catalyst>, L<JSON>
+L<Catalyst>, L<JSON>, L<Encode::JavaScript::UCS>
 
 =cut

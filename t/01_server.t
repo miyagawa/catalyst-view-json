@@ -32,7 +32,7 @@ my $entrypoint = "http://localhost/foo";
     ok( my $response = request($request), 'Request' );
     ok( $response->is_success, 'Response Successful 2xx' );
     is( $response->code, 200, 'Response Code' );
-    is_deeply( [ $response->content_type ], [ 'text/javascript', 'charset=utf-8' ] );
+    is_deeply( [ $response->content_type ], [ 'application/json', 'charset=utf-8' ] );
 
     my $data = JSON::jsonToObj($response->content);
     is $data->{json_foo}, "bar";
@@ -46,7 +46,7 @@ my $entrypoint = "http://localhost/foo";
     ok( my $response = request($request), 'Request' );
     ok( $response->is_success, 'Response Successful 2xx' );
     is( $response->code, 200, 'Response Code' );
-    is_deeply( [ $response->content_type ], [ 'text/javascript', 'charset=utf-8' ] );
+    is_deeply( [ $response->content_type ], [ 'application/json', 'charset=utf-8' ] );
 
     my $data = JSON::jsonToObj($response->content);
     is $data, "bar";
@@ -58,7 +58,7 @@ my $entrypoint = "http://localhost/foo";
     ok( my $response = request($request), 'Request' );
     ok( $response->is_success, 'Response Successful 2xx' );
     is( $response->code, 200, 'Response Code' );
-    is_deeply( [ $response->content_type ], [ 'text/javascript', 'charset=utf-8' ] );
+    is_deeply( [ $response->content_type ], [ 'application/json', 'charset=utf-8' ] );
 
     my $body = $response->content;
     ok $body =~ s/^foobar\((.*?)\);$/$1/sg, "wrapped in a callback";
@@ -80,7 +80,7 @@ my $entrypoint = "http://localhost/foo";
     my $request = HTTP::Request->new( GET => "http://localhost/foo3" );
 
     ok( my $response = request($request), 'Request' );
-    is_deeply( [ $response->content_type ], [ 'text/javascript', 'charset=utf-8' ] );
+    is_deeply( [ $response->content_type ], [ 'application/json', 'charset=utf-8' ] );
     ok decode('utf-8', $response->content);
 }
 
@@ -88,6 +88,6 @@ my $entrypoint = "http://localhost/foo";
     my $request = HTTP::Request->new( GET => "http://localhost/foo4" );
 
     ok( my $response = request($request), 'Request' );
-    is_deeply( [ $response->content_type ], [ 'text/javascript', 'charset=euc-jp' ] );
+    is_deeply( [ $response->content_type ], [ 'application/json', 'charset=euc-jp' ] );
     ok decode('euc-jp', $response->content);
 }
