@@ -15,6 +15,7 @@ sub new {
     my $self = $class->NEXT::new($c);
 
     for my $field (keys %$arguments) {
+        next if $field eq 'json_driver';
         if ($self->can($field)) {
             $self->$field($arguments->{$field});
         } else {
