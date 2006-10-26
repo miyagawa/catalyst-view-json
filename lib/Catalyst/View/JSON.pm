@@ -1,7 +1,7 @@
 package Catalyst::View::JSON;
 
 use strict;
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 use base qw( Catalyst::View );
 use Encode ();
@@ -302,6 +302,15 @@ Tatsuhiko Miyagawa E<lt>miyagawa@bulknews.netE<gt>
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
+
+=head1 CONTRIBUTORS
+
+Following people has been contributing patches, bug reports and
+suggestions for the improvement of Catalyst::View::JSON.
+
+John Wang
+kazeburo
+Daisuke Murase
 
 =head1 SEE ALSO
 

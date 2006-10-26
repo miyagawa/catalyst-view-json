@@ -1,5 +1,9 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.12  Thu Oct 26 17:37:58 JST 2006
+        - Support X-JSON for Prototype.js (John Wang)
+        - Updated interoperability doc (John Wang)
+
 0.11  Mon Jul 31 16:21:14 JST 2006
         - Fix validator so 'json_driver' should just work (Thanks to typester)
 
