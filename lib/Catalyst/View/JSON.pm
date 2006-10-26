@@ -93,6 +93,10 @@ sub process {
         $c->res->content_type("application/json; charset=$encoding");
     }
 
+    if ($c->req->header('X-Prototype-Version')) {
+        $c->res->header('X-JSON' => 'eval("("+this.transport.responseText+")")');
+    }
+
     my $output;
     $output .= "$cb(" if $cb;
     $output .= $json;
@@ -277,7 +281,11 @@ this of limited use because IE 6 has a max header length that will
 cause the JSON evaluation to silently fail when reached. The
 recommened approach is to use Catalyst::View::JSON which will JSON
 format all the response data and return it in the response body.
-The response body can then be evaled on the client using the
+In at least prototype 1.5.0 rc0 and above, prototype.js will send
+the X-Prototype-Version header. If this is encountered, a JavaScript
+eval will be returned in the X-JSON resonse header to automatically
+eval the response body. If your version of prototype does not send
+this header, you can manually eval the response body using the
 following JavaScript:
 
   evalJSON: function(request) {
