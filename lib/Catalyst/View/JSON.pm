@@ -195,6 +195,14 @@ instead of the whole object (hashref in perl). This option will be
 useful when you share the method with different views (e.g. TT) and
 don't want to expose non-irrelevant stash variables as in JSON.
 
+=item json_driver
+
+  json_driver: JSON::Syck
+
+By default this plugin uses JSON to encode the object, but you can
+switch to the other drivers like JSON::Syck. For now, JSON::Syck is
+the only alternative encoding driver.
+
 =back
 
 =head2 ENCODINGS
