@@ -5,7 +5,7 @@ use FindBin;
 use lib "$FindBin::Bin/lib";
 
 use Encode;
-use Test::More tests => 28;
+use Test::More tests => 38;
 use Catalyst::Test 'TestApp';
 use JSON ();
 
@@ -91,3 +91,41 @@ my $entrypoint = "http://localhost/foo";
     is_deeply( [ $response->content_type ], [ 'application/json', 'charset=euc-jp' ] );
     ok decode('euc-jp', $response->content);
 }
+
+{
+    my $request = HTTP::Request->new( GET => "http://localhost/foo3" );
+    $request->header("User-Agent", "Safari");
+
+    ok( my $response = request($request), 'Request' );
+    is_deeply( [ $response->content_type ], [ 'application/json', 'charset=utf-8' ] );
+    my $bom = substr $response->content, 0, 3;
+    is $bom, "\xEF\xBB\xBF";
+}
+
+{
+    my $request = HTTP::Request->new( GET => "http://localhost/foo3" );
+    $request->header("User-Agent", "Safari");
+
+    ok( my $response = request($request), 'Request' );
+    is_deeply( [ $response->content_type ], [ 'application/json', 'charset=utf-8' ] );
+    my $bom = substr $response->content, 0, 3;
+    is $bom, "\xEF\xBB\xBF";
+}
+
+{
+    my $request = HTTP::Request->new( GET => "http://localhost/foo3" );
+    $request->header("X-Prototype-Version", "1.5");
+
+    ok( my $response = request($request), 'Request' );
+    ok $response->header('X-JSON');
+}
+
+{
+    my $request = HTTP::Request->new( GET => "http://localhost/foo5" );
+    $request->header("X-Prototype-Version", "1.5");
+
+    ok( my $response = request($request), 'Request' );
+    ok !$response->header('X-JSON');
+}
+
+

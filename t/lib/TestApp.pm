@@ -41,6 +41,7 @@ sub foo2 : Global {
 sub foo3 : Global {
     my( $self, $c ) = @_;
     $c->stash->{json_foo} = "\x{5bae}\x{5ddd}";
+    $c->component('View::JSON')->encoding('utf-8');
     $c->forward('TestApp::View::JSON');
 }
 
@@ -48,6 +49,13 @@ sub foo4 : Global {
     my( $self, $c ) = @_;
     $c->stash->{json_foo} = "\x{5bae}\x{5ddd}";
     $c->component('View::JSON')->encoding('euc-jp');
+    $c->forward('TestApp::View::JSON');
+}
+
+sub foo5 : Global {
+    my( $self, $c ) = @_;
+    $c->stash->{json_foo} = "\x{5bae}\x{5ddd}";
+    $c->component('View::JSON')->no_x_json_header(1);
     $c->forward('TestApp::View::JSON');
 }
 
