@@ -1,14 +1,14 @@
 package Catalyst::View::JSON;
 
 use strict;
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 use base qw( Catalyst::View );
 use Encode ();
 use NEXT;
 use Catalyst::Exception;
 
-__PACKAGE__->mk_accessors(qw( allow_callback callback_param expose_stash encoding json_dumper ));
+__PACKAGE__->mk_accessors(qw( allow_callback callback_param expose_stash encoding json_dumper no_x_json_header ));
 
 sub new {
     my($class, $c, $arguments) = @_;
@@ -93,11 +93,17 @@ sub process {
         $c->res->content_type("application/json; charset=$encoding");
     }
 
-    if ($c->req->header('X-Prototype-Version')) {
+    if ($c->req->header('X-Prototype-Version') && $self->no_x_json_header) {
         $c->res->header('X-JSON' => 'eval("("+this.transport.responseText+")")');
     }
 
     my $output;
+
+    ## add UTF-8 BOM if the client is Safari
+    if (($c->req->user_agent || '') =~ m/Safari/ and $encoding eq 'utf-8') {
+        $output = "\xEF\xBB\xBF";
+    }
+
     $output .= "$cb(" if $cb;
     $output .= $json;
     $output .= ");"   if $cb;
@@ -203,6 +209,14 @@ By default this plugin uses JSON to encode the object, but you can
 switch to the other drivers like JSON::Syck. For now, JSON::Syck is
 the only alternative encoding driver.
 
+=item no_x_json_header
+
+  no_x_json_header: 1
+
+By default this plugin sets X-JSON header if the requested client is a
+Prototype.js with X-JSON support. By setting 1, you can opt-out this
+behavior so that you can do eval() by your own. Defaults to 0.
+
 =back
 
 =head2 ENCODINGS
@@ -289,12 +303,13 @@ this of limited use because IE 6 has a max header length that will
 cause the JSON evaluation to silently fail when reached. The
 recommened approach is to use Catalyst::View::JSON which will JSON
 format all the response data and return it in the response body.
-In at least prototype 1.5.0 rc0 and above, prototype.js will send
-the X-Prototype-Version header. If this is encountered, a JavaScript
-eval will be returned in the X-JSON resonse header to automatically
-eval the response body. If your version of prototype does not send
-this header, you can manually eval the response body using the
-following JavaScript:
+
+In at least prototype 1.5.0 rc0 and above, prototype.js will send the
+X-Prototype-Version header. If this is encountered, a JavaScript eval
+will be returned in the X-JSON resonse header to automatically eval
+the response body, unless you set I<no_x_json_header> to 1. If your
+version of prototype does not send this header, you can manually eval
+the response body using the following JavaScript:
 
   evalJSON: function(request) {
     try {
@@ -319,6 +334,7 @@ suggestions for the improvement of Catalyst::View::JSON.
 John Wang
 kazeburo
 Daisuke Murase
+Jun Kuriyama
 
 =head1 SEE ALSO
 

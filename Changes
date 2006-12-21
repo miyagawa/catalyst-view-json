@@ -1,5 +1,11 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.13  Wed Dec 20 17:12:32 PST 2006
+        - Added UTF-8 BOM if the User-Agent is Safari and encoding is utf-8 (Jun Kuriyama)
+        - Added 'no_x_json_header' option to disable auto-setting X-JSON for Prototype.js
+          (Jun Kuriyama)
+        - Documented json_driver config
+
 0.12  Thu Oct 26 17:37:58 JST 2006
         - Support X-JSON for Prototype.js (John Wang)
         - Updated interoperability doc (John Wang)
