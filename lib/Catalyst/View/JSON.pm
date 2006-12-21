@@ -19,7 +19,7 @@ sub new {
         if ($self->can($field)) {
             $self->$field($arguments->{$field});
         } else {
-            $c->log->debug("Unkown config parameter '$field'");
+            $c->log->debug("Unknown config parameter '$field'");
         }
     }
 
