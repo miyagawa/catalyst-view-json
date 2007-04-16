@@ -29,7 +29,6 @@ sub new {
 
     eval {
         JSON::Any->import($driver);
-#        my $json = JSON::Any->new;
         $self->json_dumper(sub { JSON::Any->objToJson($_[0]) });
     };
 
