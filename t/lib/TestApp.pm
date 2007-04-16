@@ -31,7 +31,7 @@ sub foo : Global {
 sub foo2 : Global {
     my( $self, $c ) = @_;
 
-    $c->component('View::JSON')->expose_stash('json_foo');
+    $c->component('View::JSON')->expose_stash('json_baz');
     $c->stash->{json_foo} = "bar";
     $c->stash->{json_baz} = [ 1, 2, 3 ];
 

@@ -1,5 +1,9 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.15  Fri Apr 13 19:25:04 PDT 2007
+        - Switch to use JSON::Any to abstract JSON drivers imlementations
+          (Thanks to Florian Ragwitz for the patch)
+
 0.14  Wed Dec 20 17:20:26 PST 2006
         - Oops, no_x_json_header in 0.13 was broken
 

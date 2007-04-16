@@ -49,7 +49,7 @@ my $entrypoint = "http://localhost/foo";
     is_deeply( [ $response->content_type ], [ 'application/json', 'charset=utf-8' ] );
 
     my $data = JSON::jsonToObj($response->content);
-    is $data, "bar";
+    is_deeply( $data, [1, 2, 3] );
 }
 
 {

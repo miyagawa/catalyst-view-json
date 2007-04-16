@@ -1,12 +1,13 @@
 package Catalyst::View::JSON;
 
 use strict;
-our $VERSION = '0.14';
+our $VERSION = '0.15';
 
 use base qw( Catalyst::View );
 use Encode ();
 use NEXT;
 use Catalyst::Exception;
+require JSON::Any;
 
 __PACKAGE__->mk_accessors(qw( allow_callback callback_param expose_stash encoding json_dumper no_x_json_header ));
 
@@ -23,23 +24,20 @@ sub new {
         }
     }
 
-    my $driver = $arguments->{json_driver} || 'JSON';
-    if ($driver eq 'JSON::Syck') {
-        require JSON::Syck;
-        $self->json_dumper(sub { JSON::Syck::Dump($_[0]) });
-    } elsif ($driver eq 'JSON') {
-        require JSON::Converter;
-        my $conv   = JSON::Converter->new;
-        my $dumper = sub {
-            my $data = shift;
-            ref $data ? $conv->objToJson($data) : $conv->valueToJson($data);
-        };
-        $self->json_dumper($dumper);
-    } else {
-        Catalyst::Exception->throw("Don't know json_driver $driver");
+    my $driver = $arguments->{json_driver} || 'Syck';
+    $driver =~ s/^JSON:://; #backward compatibility
+
+    eval {
+        JSON::Any->import($driver);
+#        my $json = JSON::Any->new;
+        $self->json_dumper(sub { JSON::Any->objToJson($_[0]) });
+    };
+
+    if (my $error = $@) {
+        die $error;
     }
 
-    $self;
+    return $self;
 }
 
 sub process {
