@@ -1,10 +1,13 @@
-use ExtUtils::MakeMaker;
-WriteMakefile(
-    'NAME'      => 'Catalyst::View::JSON',
-    'VERSION_FROM' => 'lib/Catalyst/View/JSON.pm', # finds $VERSION
-    'PREREQ_PM' => {
-	Test::More => 0.32,
-        JSON::Any => 1.00,
-        Catalyst => 5.60,
-    },
-);
+use inc::Module::Install;
+
+name 'Catalyst-View-JSON';
+all_from 'lib/Catalyst/View/JSON.pm';
+
+build_requires 'Test::More';
+build_requires $_ for qw( JSON JSON::Parser JSON::Converter );
+
+requires 'JSON::Any';
+requires 'Catalyst', 5.60;
+
+auto_include;
+WriteAll;

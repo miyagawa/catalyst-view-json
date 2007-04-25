@@ -1,5 +1,10 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.17  Wed Apr 25 16:04:44 PDT 2007
+        - Switch to Module::Install
+        - include JSON.pm in inc/ for testing.
+          (Thanks to Matt S Trout)
+
 0.16  Tue Apr 17 20:11:38 PDT 2007
         - Added JSON::Any dependency
 
