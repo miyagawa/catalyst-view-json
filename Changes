@@ -1,5 +1,9 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.18  Mon Apr 30 21:08:06 PDT 2007
+        - Make 'JSON' as a default driver to make it backward compatible
+          (Thanks to Andy Hobbs)
+
 0.17  Wed Apr 25 16:04:44 PDT 2007
         - Switch to Module::Install
         - include JSON.pm in inc/ for testing.

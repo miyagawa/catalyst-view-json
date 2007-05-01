@@ -1,7 +1,7 @@
 package Catalyst::View::JSON;
 
 use strict;
-our $VERSION = '0.17';
+our $VERSION = '0.18';
 
 use base qw( Catalyst::View );
 use Encode ();
@@ -24,7 +24,7 @@ sub new {
         }
     }
 
-    my $driver = $arguments->{json_driver} || 'Syck';
+    my $driver = $arguments->{json_driver} || 'JSON';
     $driver =~ s/^JSON:://; #backward compatibility
 
     eval {
