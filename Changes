@@ -1,5 +1,9 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.20  Wed Aug 29 03:23:27 PDT 2007
+        - Fixed POD config 'V::JSON' to 'View::JSON'
+          (Thanks to Matt S Trout)
+
 0.19  Fri Aug  3 15:32:04 PDT 2007
         - Store JSON::Any object into json_dumper to prevent other
           modules to change JSON::Any backend like WWW::Facebook::API does.

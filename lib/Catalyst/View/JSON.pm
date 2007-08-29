@@ -1,7 +1,7 @@
 package Catalyst::View::JSON;
 
 use strict;
-our $VERSION = '0.19';
+our $VERSION = '0.20';
 
 use base qw( Catalyst::View );
 use Encode ();
@@ -132,7 +132,7 @@ Catalyst::View::JSON - JSON view for your data
   # configure in lib/MyApp.pm
   MyApp->config({
       ...
-      'V::JSON' => {
+      'View::JSON' => {
           allow_callback  => 1,    # defaults to 0
           callback_param  => 'cb', # defaults to 'callback'
           expose_stash    => [ qw(foo bar) ], # defaults to everything
