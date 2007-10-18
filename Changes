@@ -1,5 +1,9 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.21  Thu Oct 18 13:53:47 PDT 2007
+        - Update JSON::Any dependency to 1.11
+          (Thanks to typester and perigrin)
+
 0.20  Wed Aug 29 03:23:27 PDT 2007
         - Fixed POD config 'V::JSON' to 'View::JSON'
           (Thanks to Matt S Trout)
