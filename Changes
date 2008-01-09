@@ -1,5 +1,9 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.22  Wed Jan  9 14:29:20 PST 2008
+        - Updated the test to work with JSON 2.x and now unbundle JSON.pm in inc/
+          (Thanks to Daniel Westermann-Clark)
+
 0.21  Thu Oct 18 13:53:47 PDT 2007
         - Update JSON::Any dependency to 1.11
           (Thanks to typester and perigrin)

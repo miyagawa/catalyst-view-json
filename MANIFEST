@@ -1,7 +1,4 @@
 Changes
-inc/JSON.pm
-inc/JSON/Converter.pm
-inc/JSON/Parser.pm
 inc/Module/Install.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
