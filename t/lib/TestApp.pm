@@ -59,6 +59,12 @@ sub foo5 : Global {
     $c->forward('TestApp::View::JSON');
 }
 
+sub foo6 : Global {
+    my( $self, $c ) = @_;
+    $c->stash->{json_foo} = "\x{5bae}\x{5ddd}";
+    $c->forward('TestApp::View::JSON2');
+}
+
 sub finalize_error {
     my $c = shift;
     $c->res->header('X-Error' => $c->error->[0]);

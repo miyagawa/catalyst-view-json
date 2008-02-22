@@ -13,7 +13,7 @@ if ($@) {
     plan skip_all => "JSON 2.04 is needed for testing";
 }
 
-plan tests => 38;
+plan tests => 40;
 
 BEGIN {
     no warnings 'redefine';
@@ -132,6 +132,14 @@ my $entrypoint = "http://localhost/foo";
 
     ok( my $response = request($request), 'Request' );
     ok !$response->header('X-JSON');
+}
+
+{
+    my $request = HTTP::Request->new( GET => "http://localhost/foo6" );
+
+    ok( my $response = request($request), 'Request' );
+    my $data = JSON::from_json($response->content);
+    is $data->{foo}, "fake";
 }
 
 

@@ -7,7 +7,6 @@ use base qw( Catalyst::View );
 use Encode ();
 use NEXT;
 use Catalyst::Exception;
-require JSON::Any;
 
 __PACKAGE__->mk_accessors(qw( allow_callback callback_param expose_stash encoding json_dumper no_x_json_header ));
 
@@ -27,14 +26,22 @@ sub new {
     my $driver = $arguments->{json_driver} || 'JSON';
     $driver =~ s/^JSON:://; #backward compatibility
 
-    eval {
-        JSON::Any->import($driver);
-        my $json = JSON::Any->new; # create the copy of JSON handler
-        $self->json_dumper(sub { $json->objToJson($_[0]) });
-    };
+    if (my $method = $self->can('encode_json')) {
+        $self->json_dumper( sub {
+                                my($data, $self, $c) = @_;
+                                $method->($self, $c, $data);
+                            } );
+    } else {
+        eval {
+            require JSON::Any;
+            JSON::Any->import($driver);
+            my $json = JSON::Any->new; # create the copy of JSON handler
+            $self->json_dumper(sub { $json->objToJson($_[0]) });
+        };
 
-    if (my $error = $@) {
-        die $error;
+        if (my $error = $@) {
+            die $error;
+        }
     }
 
     return $self;
@@ -73,7 +80,7 @@ sub process {
     my $cb = $cb_param ? $c->req->param($cb_param) : undef;
     $self->validate_callback_param($cb) if $cb;
 
-    my $json = $self->json_dumper->($data);
+    my $json = $self->json_dumper->($data, $self, $c); # weird order to be backward compat
 
     # When you set encoding option in View::JSON, this plugin DWIMs
     my $encoding = $self->encoding || 'utf-8';
@@ -204,8 +211,8 @@ don't want to expose non-irrelevant stash variables as in JSON.
   json_driver: JSON::Syck
 
 By default this plugin uses JSON to encode the object, but you can
-switch to the other drivers like JSON::Syck. For now, JSON::Syck is
-the only alternative encoding driver.
+switch to the other drivers like JSON::Syck, whichever JSON::Any
+supports.
 
 =item no_x_json_header
 
@@ -217,7 +224,27 @@ behavior so that you can do eval() by your own. Defaults to 0.
 
 =back
 
-=head2 ENCODINGS
+=head1 OVERRIDING JSON ENCODER
+
+By default it uses JSON::Any to serialize perl data strucuture into
+JSON data format. If you want to avoid this and encode with your own
+encoder (like passing options to JSON::XS etc.), you can implement
+C<encode_json> method in your View class.
+
+  package MyApp::View::JSON;
+  use base qw( Catalyst::View::JSON );
+
+  use JSON::XS;
+
+  sub encode_json {
+      my($self, $c, $data) = @_;
+      my $encoder = JSON::XS->new->ascii->pretty->allow_nonref;
+      $encoder->encode($data);
+  }
+
+  1;
+
+=head1 ENCODINGS
 
 Due to the browser gotchas like those of Safari and Opera, sometimes
 you have to specify a valid charset value in the response's
@@ -241,7 +268,7 @@ characters in the output JSON will be automatically encoded to
 JavaScript Unicode encoding like I<\uXXXX>. You have to install
 L<Encode::JavaScript::UCS> to use the encoding.
 
-=head2 CALLBACKS
+=head1 CALLBACKS
 
 By default it returns raw JSON data so your JavaScript app can deal
 with using XMLHttpRequest calls. Adding callbacks (JSONP) to the API
