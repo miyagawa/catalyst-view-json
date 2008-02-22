@@ -421,4 +421,9 @@ Jun Kuriyama
 
 L<Catalyst>, L<JSON>, L<Encode::JavaScript::UCS>
 
+L<http://www.prototypejs.org/learn/json>
+L<http://docs.jquery.com/Ajax/jQuery.getJSON>
+L<http://manual.dojotoolkit.org/json.html>
+L<http://developer.yahoo.com/yui/json/>
+
 =cut
