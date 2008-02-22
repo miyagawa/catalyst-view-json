@@ -1,5 +1,9 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.23  Fri Feb 22 14:35:28 PST 2008
+        - Implemented and documented how to override JSON encoder in
+          your view class by implementing encode_json() method.
+
 0.22  Wed Jan  9 14:29:20 PST 2008
         - Updated the test to work with JSON 2.x and now unbundle JSON.pm in inc/
           (Thanks to Daniel Westermann-Clark)
