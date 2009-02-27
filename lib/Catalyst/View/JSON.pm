@@ -234,7 +234,7 @@ C<encode_json> method in your View class.
   package MyApp::View::JSON;
   use base qw( Catalyst::View::JSON );
 
-  use JSON::XS;
+  use JSON::XS ();
 
   sub encode_json {
       my($self, $c, $data) = @_;
