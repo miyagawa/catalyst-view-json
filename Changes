@@ -1,5 +1,8 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.25  Sat Apr 18 19:09:46 CST 2009
+        - Use MRO::Compat instead of NEXT. (Florian Ragwitz)
+
 0.24  Mon Mar  3 01:42:30 PST 2008
         - removed t/02_ut8.t since it doesn't do anything useful
 
