@@ -7,6 +7,7 @@ build_requires 'Test::More';
 
 requires 'JSON::Any', 1.15;
 requires 'Catalyst', 5.60;
+requires 'MRO::Compat';
 
 auto_include;
 WriteAll;

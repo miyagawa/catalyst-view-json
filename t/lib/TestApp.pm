@@ -2,6 +2,7 @@ package TestApp;
 
 use strict;
 use warnings;
+use MRO::Compat;
 
 use Catalyst;
 
@@ -68,7 +69,7 @@ sub foo6 : Global {
 sub finalize_error {
     my $c = shift;
     $c->res->header('X-Error' => $c->error->[0]);
-    $c->NEXT::finalize_error;
+    $c->next::method;
 }
 
 1;
