@@ -1,7 +1,7 @@
 package Catalyst::View::JSON;
 
 use strict;
-our $VERSION = '0.25';
+our $VERSION = '0.26';
 
 use base qw( Catalyst::View );
 use Encode ();

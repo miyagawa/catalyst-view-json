@@ -1,5 +1,8 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.26  Mon Aug 24 16:11:37 PDT 2009
+        - Work around not to expose Catalyst specific stash variables (Chris Prather)
+
 0.25  Sat Apr 18 19:09:46 CST 2009
         - Use MRO::Compat instead of NEXT. (Florian Ragwitz)
 
