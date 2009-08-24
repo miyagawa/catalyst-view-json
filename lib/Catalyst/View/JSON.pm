@@ -15,6 +15,10 @@ sub new {
     my $self = $class->next::method($c);
 
     for my $field (keys %$arguments) {
+        
+        # Remove catalyst_component_name (and future Cat specific params)
+        next if $field =~ /^catalyst/;
+        
         next if $field eq 'json_driver';
         if ($self->can($field)) {
             $self->$field($arguments->{$field});
