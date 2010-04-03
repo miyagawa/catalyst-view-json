@@ -60,8 +60,8 @@ sub encode_json {
     $d->($data);
 }
 
-sub process {
-    my($self, $c) = @_;
+sub filter_stash {
+    my($self, $c, $stash) = @_;
 
     # get the response data from stash
     my $cond = sub { 1 };
@@ -82,11 +82,19 @@ sub process {
 
     my $data;
     if ($single_key) {
-        $data = $c->stash->{$single_key};
+        $data = $stash->{$single_key};
     } else {
-        $data = { map { $cond->($_) ? ($_ => $c->stash->{$_}) : () }
-                  keys %{$c->stash} };
+        $data = { map { $cond->($_) ? ($_ => $stash->{$_}) : () }
+                  keys %$stash };
     }
+
+    return $data;
+}
+
+sub process {
+    my($self, $c) = @_;
+
+    my $data = $self->filter_stash($c, $c->stash);
 
     my $cb_param = $self->allow_callback
         ? ($self->callback_param || 'callback') : undef;
