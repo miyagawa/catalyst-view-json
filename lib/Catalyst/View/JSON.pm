@@ -9,7 +9,7 @@ use Encode ();
 use MRO::Compat;
 use Catalyst::Exception;
 
-__PACKAGE__->mk_accessors(qw( allow_callback callback_param expose_stash encoding json_dumper no_x_json_header ));
+__PACKAGE__->mk_accessors(qw( allow_callback callback_param expose_stash encoding json_driver json_dumper no_x_json_header ));
 
 sub new {
     my($class, $c, $arguments) = @_;
@@ -20,7 +20,6 @@ sub new {
         # Remove catalyst_component_name (and future Cat specific params)
         next if $field =~ /^catalyst/;
         
-        next if $field eq 'json_driver';
         if ($self->can($field)) {
             $self->$field($arguments->{$field});
         } else {
@@ -28,28 +27,37 @@ sub new {
         }
     }
 
-    my $driver = $arguments->{json_driver} || 'JSON';
+    return $self;
+}
+
+sub init_dumper {
+    my($self, $driver) = @_;
+
+    $driver ||= 'JSON';
     $driver =~ s/^JSON:://; #backward compatibility
 
-    if (my $method = $self->can('encode_json')) {
-        $self->json_dumper( sub {
-                                my($data, $self, $c) = @_;
-                                $method->($self, $c, $data);
-                            } );
-    } else {
-        eval {
-            require JSON::Any;
-            JSON::Any->import($driver);
-            my $json = JSON::Any->new; # create the copy of JSON handler
-            $self->json_dumper(sub { $json->objToJson($_[0]) });
-        };
+    my $json = eval {
+        require JSON::Any;
+        JSON::Any->import($driver);
+        JSON::Any->new; # create the copy of JSON handler
+    };
 
-        if (my $error = $@) {
-            die $error;
-        }
+    die $@ if not defined $json;
+
+    return sub { $json->objToJson($_[0]) };
+}
+
+sub encode_json {
+    my($self, $c, $data) = @_;
+
+    my $d = $self->json_dumper;
+
+    if (not $d) {
+        $d = $self->init_dumper($self->json_driver);
+        $self->json_dumper($d);
     }
 
-    return $self;
+    $d->($data);
 }
 
 sub process {
@@ -85,7 +93,7 @@ sub process {
     my $cb = $cb_param ? $c->req->param($cb_param) : undef;
     $self->validate_callback_param($cb) if $cb;
 
-    my $json = $self->json_dumper->($data, $self, $c); # weird order to be backward compat
+    my $json = $self->encode_json($c, $data);
 
     # When you set encoding option in View::JSON, this plugin DWIMs
     my $encoding = $self->encoding || 'utf-8';
