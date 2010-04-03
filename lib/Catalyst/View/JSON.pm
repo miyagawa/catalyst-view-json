@@ -63,32 +63,25 @@ sub encode_json {
 sub filter_stash {
     my($self, $c, $stash) = @_;
 
-    # get the response data from stash
-    my $cond = sub { 1 };
+    my $expose = $self->expose_stash
+        or return $stash;
 
-    my $single_key;
-    if (my $expose = $self->expose_stash) {
-        if (ref($expose) eq 'Regexp') {
-            $cond = sub { $_[0] =~ $expose };
-        } elsif (ref($expose) eq 'ARRAY') {
-            my %match = map { $_ => 1 } @$expose;
-            $cond = sub { $match{$_[0]} };
-        } elsif (!ref($expose)) {
-            $single_key = $expose;
-        } else {
-            $c->log->warn("expose_stash should be an array referernce or Regexp object.");
-        }
-    }
+    my $reftype = ref $expose
+        or return $stash->{$expose};
 
-    my $data;
-    if ($single_key) {
-        $data = $stash->{$single_key};
+    my @key;
+
+    if ($reftype eq 'Regexp') {
+        @key = grep /$expose/, keys %$stash;
+    } elsif ($reftype eq 'ARRAY') {
+        my %match = map { $_ => 1 } @$expose;
+        @key = grep $match{$_[0]}, keys %$stash;
     } else {
-        $data = { map { $cond->($_) ? ($_ => $stash->{$_}) : () }
-                  keys %$stash };
+        $c->log->warn("expose_stash should be an array referernce or Regexp object.");
+        @key = keys %$stash;
     }
 
-    return $data;
+    return { map {; $_ => $stash->{$_} } @key };
 }
 
 sub process {
