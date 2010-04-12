@@ -16,7 +16,9 @@ META.yml
 t/00_compile.t
 t/01_server.t
 t/lib/TestApp.pm
+t/lib/TestApp/Controller/Root.pm
 t/lib/TestApp/View/JSON.pm
 t/lib/TestApp/View/JSON2.pm
 t/lib/TestAppUnicode.pm
+t/lib/TestAppUnicode/Controller/Root.pm
 t/lib/TestAppUnicode/View/JSON.pm

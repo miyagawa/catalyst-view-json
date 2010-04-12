@@ -1,5 +1,6 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.29  Tue Apr 13 00:00:07 CEST 2010
         - Fix test application to call $c->forward('View::JSON') rather than
           (the incorrect) $c->forward('MyApp::View::JSON')
         - Fix documentation to match the above change
