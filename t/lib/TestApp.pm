@@ -26,7 +26,7 @@ sub foo : Global {
     $c->stash->{json_baz} = [ 1, 2, 3 ];
     $c->stash->{foo}      = "barbarbar";
 
-    $c->forward('TestApp::View::JSON');
+    $c->forward('View::JSON');
 }
 
 sub foo2 : Global {
@@ -36,34 +36,34 @@ sub foo2 : Global {
     $c->stash->{json_foo} = "bar";
     $c->stash->{json_baz} = [ 1, 2, 3 ];
 
-    $c->forward('TestApp::View::JSON');
+    $c->forward('View::JSON');
 }
 
 sub foo3 : Global {
     my( $self, $c ) = @_;
     $c->stash->{json_foo} = "\x{5bae}\x{5ddd}";
     $c->component('View::JSON')->encoding('utf-8');
-    $c->forward('TestApp::View::JSON');
+    $c->forward('View::JSON');
 }
 
 sub foo4 : Global {
     my( $self, $c ) = @_;
     $c->stash->{json_foo} = "\x{5bae}\x{5ddd}";
     $c->component('View::JSON')->encoding('euc-jp');
-    $c->forward('TestApp::View::JSON');
+    $c->forward('View::JSON');
 }
 
 sub foo5 : Global {
     my( $self, $c ) = @_;
     $c->stash->{json_foo} = "\x{5bae}\x{5ddd}";
     $c->component('View::JSON')->no_x_json_header(1);
-    $c->forward('TestApp::View::JSON');
+    $c->forward('View::JSON');
 }
 
 sub foo6 : Global {
     my( $self, $c ) = @_;
     $c->stash->{json_foo} = "\x{5bae}\x{5ddd}";
-    $c->forward('TestApp::View::JSON2');
+    $c->forward('View::JSON2');
 }
 
 sub finalize_error {

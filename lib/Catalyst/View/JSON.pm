@@ -154,7 +154,7 @@ Catalyst::View::JSON - JSON view for your data
   sub hello : Local {
       my($self, $c) = @_;
       $c->stash->{message} = 'Hello World!';
-      $c->forward('MyApp::View::JSON');
+      $c->forward('View::JSON');
   }
 
 =head1 DESCRIPTION
@@ -287,7 +287,7 @@ For example, suppose you have the following code.
   sub end : Private {
       my($self, $c) = @_;
       if ($c->req->param('output') eq 'json') {
-          $c->forward('MyApp::View::JSON');
+          $c->forward('View::JSON');
       } else {
           ...
       }
