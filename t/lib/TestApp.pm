@@ -9,6 +9,7 @@ use Catalyst;
 our $VERSION = '0.01';
 __PACKAGE__->config({
     name => 'TestApp',
+    disable_component_resolution_regex_fallback => 1,
     'View::JSON' => {
         expose_stash => qr/^json_/,
         allow_callback => 1,
