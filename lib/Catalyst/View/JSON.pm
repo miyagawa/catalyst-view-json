@@ -421,6 +421,7 @@ John Wang
 kazeburo
 Daisuke Murase
 Jun Kuriyama
+Tomas Doran
 
 =head1 SEE ALSO
 
