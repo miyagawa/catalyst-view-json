@@ -141,6 +141,7 @@ Catalyst::View::JSON - JSON view for your data
   use base qw( Catalyst::View::JSON );
   1;
 
+  # To access json data through stash variables 'foo' and 'bar'
   # configure in lib/MyApp.pm
   MyApp->config({
       ...
@@ -156,6 +157,24 @@ Catalyst::View::JSON - JSON view for your data
       $c->stash->{message} = 'Hello World!';
       $c->forward('View::JSON');
   }
+
+	#######
+
+  # Or return json data in the body
+  # configure in lib/MyApp.pm
+	MyApp->config({
+		...
+		'View::JSON' => {
+			expose_stash => 'json_data';
+		}
+	});
+
+	sub hello : Local {
+		my ( $self, $c ) = @_;
+		my @data = qw/One Two Three Four/;
+		$c->stash->{json_data} = \@data;
+		$c->forward('View::JSON');
+	}
 
 =head1 DESCRIPTION
 
@@ -422,6 +441,7 @@ kazeburo
 Daisuke Murase
 Jun Kuriyama
 Tomas Doran
+Frank Switalski
 
 =head1 SEE ALSO
 
