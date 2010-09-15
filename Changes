@@ -1,5 +1,8 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.31  Wed Sep 15 15:14:33 PDT 2010
+        - Chrome doesn't like UTF-8 BOM (Larry Leszczynski)
+
 0.30  Tue Apr 13 01:14:07 CEST 2010
         - Fix test application to call $c->forward('View::JSON') rather than
           (the incorrect) $c->forward('MyApp::View::JSON')
