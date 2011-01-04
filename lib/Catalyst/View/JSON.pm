@@ -97,11 +97,7 @@ sub process {
         $json = Encode::encode($encoding, $json);
     }
 
-    if (($c->req->user_agent || '') =~ /Opera/) {
-        $c->res->content_type("application/x-javascript; charset=$encoding");
-    } else {
-        $c->res->content_type("application/json; charset=$encoding");
-    }
+    $c->res->content_type("application/json; charset=$encoding");
 
     if ($c->req->header('X-Prototype-Version') && !$self->no_x_json_header) {
         $c->res->header('X-JSON' => 'eval("("+this.transport.responseText+")")');
