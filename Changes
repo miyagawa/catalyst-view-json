@@ -1,5 +1,8 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.32  Tue Jan  4 10:03:05 PST 2011
+        - remove Opera special casing (omega)
+
 0.31  Wed Sep 15 15:14:33 PDT 2010
         - Chrome doesn't like UTF-8 BOM (Larry Leszczynski)
 
