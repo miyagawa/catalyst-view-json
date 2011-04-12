@@ -35,9 +35,10 @@ BEGIN {
 
             my $ret;
             require Plack::Test;
-            Plack::Test::test_psgi
+            Plack::Test::test_psgi(
                 app    => sub { $app->(%{ $_[0] }) },
-                client => sub { $ret = shift->($request) };
+                client => sub { $ret = shift->($request) },
+            );
             return $ret;
         };
 
