@@ -17,17 +17,31 @@ plan tests => 40;
 
 BEGIN {
     no warnings 'redefine';
+    if ( $Catalyst::VERSION < 5.89 ) {
+        *Catalyst::Test::local_request = sub {
+            my ( $class, $request ) = @_;
 
-    *Catalyst::Test::local_request = sub {
-        my ( $class, $request ) = @_;
+            require HTTP::Request::AsCGI;
+            my $cgi = HTTP::Request::AsCGI->new( $request, %ENV )->setup;
 
-        require HTTP::Request::AsCGI;
-        my $cgi = HTTP::Request::AsCGI->new( $request, %ENV )->setup;
+            $class->handle_request;
 
-        $class->handle_request;
+            return $cgi->restore->response;
+        };
+    } else {
+        *Catalyst::Test::local_request => sub {
+            my ( $class, $request ) = @_;
+            my $app = ref($class) eq "CODE" ? $class : $class->_finalized_psgi_app;
 
-        return $cgi->restore->response;
-    };
+            my $ret;
+            require Plack::Test;
+            Plack::Test::test_psgi
+                app    => sub { $app->(%{ $_[0] }) },
+                client => sub { $ret = shift->($request) };
+            return $ret;
+        };
+
+    }
 }
 
 my $entrypoint = "http://localhost/foo";
