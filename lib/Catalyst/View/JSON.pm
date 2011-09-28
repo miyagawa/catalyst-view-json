@@ -357,13 +357,13 @@ security of your data.
 
 =head2 Use callbacks only for public data
 
-When you enable callbacks (JSONP) by setting C<allow_callbacks>, all
+When you enable callbacks (JSONP) by setting C<allow_callback>, all
 your JSON data will be available cross-site. This means embedding
 private data of logged-in user to JSON is considered bad.
 
   # MyApp.yaml
   View::JSON:
-    allow_callbacks: 1
+    allow_callback: 1
 
   sub foo : Local {
       my($self, $c) = @_;
@@ -374,7 +374,7 @@ private data of logged-in user to JSON is considered bad.
 If you want to enable callbacks in a controller (for public API) and
 disable in another, you need to create two different View classes,
 like MyApp::View::JSON and MyApp::View::JSONP, because
-C<allow_callbacks> is a static configuration of the View::JSON class.
+C<allow_callback> is a static configuration of the View::JSON class.
 
 See L<http://ajaxian.com/archives/gmail-csrf-security-flaw> for more.
 
