@@ -1,5 +1,8 @@
 Revision history for Perl extension Catalyst::View::JSON
 
+0.34  Thr Apr 26
+        - Made failure to load driver warning more verbose - Evan Carroll
+
 0.33  Tue Apr 12 12:20:22 PDT 2011
         - Fixed local_request monkey patching to support Catalyst >= 5.89
 

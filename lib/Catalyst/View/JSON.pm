@@ -1,7 +1,7 @@
 package Catalyst::View::JSON;
 
 use strict;
-our $VERSION = '0.33';
+our $VERSION = '0.34';
 use 5.008_001;
 
 use base qw( Catalyst::View );
@@ -39,7 +39,9 @@ sub new {
     } else {
         eval {
             require JSON::Any;
-            JSON::Any->import($driver);
+						eval {
+	            JSON::Any->import($driver);
+						} or die "Failed to spawn JSON::Any with driver '$driver': $@";
             my $json = JSON::Any->new; # create the copy of JSON handler
             $self->json_dumper(sub { $json->objToJson($_[0]) });
         };
