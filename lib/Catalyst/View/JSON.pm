@@ -230,7 +230,7 @@ behavior so that you can do eval() by your own. Defaults to 0.
 
 =head1 OVERRIDING JSON ENCODER
 
-By default it uses JSON::Any to serialize perl data strucuture into
+By default it uses JSON::Any to serialize perl data structure into
 JSON data format. If you want to avoid this and encode with your own
 encoder (like passing options to JSON::XS etc.), you can implement
 C<encode_json> method in your View class.
@@ -331,12 +331,12 @@ returned in the custom X-JSON header. The reason given for this is
 to allow a separate HTML fragment in the response body, however
 this of limited use because IE 6 has a max header length that will
 cause the JSON evaluation to silently fail when reached. The
-recommened approach is to use Catalyst::View::JSON which will JSON
+recommend approach is to use Catalyst::View::JSON which will JSON
 format all the response data and return it in the response body.
 
 In at least prototype 1.5.0 rc0 and above, prototype.js will send the
 X-Prototype-Version header. If this is encountered, a JavaScript eval
-will be returned in the X-JSON resonse header to automatically eval
+will be returned in the X-JSON response header to automatically eval
 the response body, unless you set I<no_x_json_header> to 1. If your
 version of prototype does not send this header, you can manually eval
 the response body using the following JavaScript:
@@ -381,7 +381,7 @@ See L<http://ajaxian.com/archives/gmail-csrf-security-flaw> for more.
 =head2 Avoid valid cross-site JSON requests
 
 Even if you disable the callbacks, the nature of JavaScript still has
-a possiblity to access private JSON data cross-site, by overriding
+a possibility to access private JSON data cross-site, by overriding
 Array constructor C<[]>.
 
   # MyApp.yaml
