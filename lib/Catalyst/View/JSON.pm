@@ -97,6 +97,11 @@ sub process {
         $json = Encode::encode($encoding, $json);
     }
 
+    # encode also callback to octets
+    if ( $cb && Encode::is_utf8($cb) ) {
+        $cb = Encode::encode($encoding, $cb);
+    }
+
     $c->res->content_type("application/json; charset=$encoding");
 
     if ($c->req->header('X-Prototype-Version') && !$self->no_x_json_header) {
