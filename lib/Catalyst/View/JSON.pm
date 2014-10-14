@@ -20,7 +20,9 @@ sub new {
         # Remove catalyst_component_name (and future Cat specific params)
         next if $field =~ /^catalyst/;
         
+        # no longer supported
         next if $field eq 'json_driver';
+
         if ($self->can($field)) {
             $self->$field($arguments->{$field});
         } else {
@@ -28,8 +30,11 @@ sub new {
         }
     }
 
-    my $driver = $arguments->{json_driver} || 'JSON';
-    $driver =~ s/^JSON:://; #backward compatibility
+    my $method = $self->can('encode_json');
+    $self->json_dumper( sub {
+                            my($data, $self, $c) = @_;
+                            $method->($self, $c, $data);
+                        } );
 
     if (my $method = $self->can('encode_json')) {
         $self->json_dumper( sub {
@@ -37,16 +42,8 @@ sub new {
                                 $method->($self, $c, $data);
                             } );
     } else {
-        eval {
-            require JSON::Any;
-            JSON::Any->import($driver);
-            my $json = JSON::Any->new; # create the copy of JSON handler
-            $self->json_dumper(sub { $json->objToJson($_[0]) });
-        };
-
-        if (my $error = $@) {
-            die $error;
-        }
+        require JSON::MaybeXS;
+        $self->json_dumper(sub { JSON::MaybeXS::encode_json($_[0]) });
     }
 
     return $self;
@@ -93,6 +90,7 @@ sub process {
     # if you pass a valid Unicode flagged string in the stash,
     # this view automatically transcodes to the encoding you set.
     # Otherwise it just bypasses the stash data in JSON format
+    # XXX FIXME this is wrong and we should not be doing this.
     if ( Encode::is_utf8($json) ) {
         $json = Encode::encode($encoding, $json);
     }
@@ -210,14 +208,6 @@ instead of the whole object (hashref in perl). This option will be
 useful when you share the method with different views (e.g. TT) and
 don't want to expose non-irrelevant stash variables as in JSON.
 
-=item json_driver
-
-  json_driver: JSON::Syck
-
-By default this plugin uses JSON to encode the object, but you can
-switch to the other drivers like JSON::Syck, whichever JSON::Any
-supports.
-
 =item no_x_json_header
 
   no_x_json_header: 1
@@ -230,19 +220,19 @@ behavior so that you can do eval() by your own. Defaults to 0.
 
 =head1 OVERRIDING JSON ENCODER
 
-By default it uses JSON::Any to serialize perl data structure into
+By default it uses L<JSON::MaybeXS::encode_json> to serialize perl data structure into
 JSON data format. If you want to avoid this and encode with your own
-encoder (like passing options to JSON::XS etc.), you can implement
-C<encode_json> method in your View class.
+encoder (like passing different options to L<JSON::MaybeXS> etc.), you can implement
+the C<encode_json> method in your View class.
 
   package MyApp::View::JSON;
   use base qw( Catalyst::View::JSON );
 
-  use JSON::XS ();
+  use JSON::MaybeXS ();
 
   sub encode_json {
       my($self, $c, $data) = @_;
-      my $encoder = JSON::XS->new->ascii->pretty->allow_nonref;
+      my $encoder = JSON::MaybeXS->new->(ascii => 1, pretty => 1, allow_nonref => 1);
       $encoder->encode($data);
   }
 
